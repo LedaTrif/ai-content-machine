@@ -127,6 +127,18 @@
       line-height: 1.6;
     }
 
+    textarea {
+      width: 100%;
+      min-height: 300px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      resize: vertical;
+    }
+
     .prompt-box {
       background: #f3f3f3;
       border: 1px solid #ddd;
@@ -227,13 +239,35 @@
       <div class="instruction">
 
         <strong>
-          Следващата стъпка:
+          1.
         </strong>
+
+        Prompt-ът е копиран автоматично.
 
         <br><br>
 
-        Prompt-ът е копиран автоматично.
-        Отвори ChatGPT, постави го и изпрати съобщението.
+        <strong>
+          2.
+        </strong>
+
+        Отвори ChatGPT.
+
+        <br><br>
+
+        <strong>
+          3.
+        </strong>
+
+        Постави prompt-а и изпрати.
+
+        <br><br>
+
+        <strong>
+          4.
+        </strong>
+
+        Копирай целия отговор от ChatGPT
+        и го постави в полето по-долу.
 
       </div>
 
@@ -265,35 +299,73 @@
         Копирай AI prompt
       </button>
 
-
-      <div
-        id="ai-status"
-      ></div>
-
     </div>
 
   </section>
 
 
   <!-- =====================================================
-       3. РЕЗУЛТАТ ОТ AI
+       3. AI ОТГОВОР
        ===================================================== -->
 
   <section>
 
     <h2>
-      3. AI РЕЗУЛТАТ
+      3. AI ОТГОВОР
     </h2>
 
 
-    <div
-      id="ai-result-instructions"
-      class="instruction"
+    <div class="instruction">
+
+      Постави тук целия отговор,
+      който ChatGPT ти е върнал.
+
+    </div>
+
+
+    <textarea
+      id="ai-response"
+      placeholder="Постави тук отговора от ChatGPT..."
+    ></textarea>
+
+
+    <br><br>
+
+
+    <button
+      id="process-response-btn"
     >
+      Обработи AI отговора
+    </button>
 
-      След като ChatGPT генерира публикацията,
-      можеш да поставиш готовия текст тук.
 
+    <div
+      id="response-status"
+    ></div>
+
+  </section>
+
+
+  <!-- =====================================================
+       4. ГОТОВА ПУБЛИКАЦИЯ
+       ===================================================== -->
+
+  <section>
+
+    <h2>
+      4. ГОТОВА ПУБЛИКАЦИЯ
+    </h2>
+
+
+    <h3>
+      Заглавие
+    </h3>
+
+    <div
+      id="post-title"
+      class="result-box"
+    >
+      Няма заглавие.
     </div>
 
 
@@ -305,7 +377,7 @@
       id="post-text"
       class="result-box"
     >
-      Все още няма генерирана публикация.
+      Няма публикация.
     </div>
 
 
@@ -317,39 +389,41 @@
       id="post-cta"
       class="result-box"
     >
-      Все още няма CTA.
+      Няма CTA.
     </div>
 
 
     <h3>
-      5 хаштага
+      5 hashtags
     </h3>
 
     <div
       id="post-hashtags"
       class="result-box"
     >
-      Все още няма hashtags.
+      Няма hashtags.
     </div>
+
+
+    <button
+      id="copy-btn"
+      disabled
+    >
+      Копирай текста
+    </button>
 
   </section>
 
 
   <!-- =====================================================
-       4. ИЗОБРАЖЕНИЕ
+       5. ИЗОБРАЖЕНИЕ
        ===================================================== -->
 
   <section>
 
     <h2>
-      4. ИЗОБРАЖЕНИЕ
+      5. ИЗОБРАЖЕНИЕ
     </h2>
-
-
-    <p>
-      След като имаме публикацията,
-      машината създава prompt за изображението.
-    </p>
 
 
     <button
@@ -369,7 +443,7 @@
       id="image-prompt"
       class="prompt-box"
     >
-      Все още няма image prompt.
+      Няма image prompt.
     </div>
 
 
@@ -381,32 +455,10 @@
 
 
   <!-- =====================================================
-       5. ГОТОВО
+       6. НОВ ПОСТ
        ===================================================== -->
 
   <section>
-
-    <h2>
-      5. ГОТОВО
-    </h2>
-
-
-    <div
-      id="ready-content"
-      class="result-box"
-    >
-      След като имаш текста и изображението,
-      можеш да ги публикуваш ръчно във Facebook или Instagram.
-    </div>
-
-
-    <button
-      id="copy-btn"
-      disabled
-    >
-      Копирай текста
-    </button>
-
 
     <button
       id="new-post-btn"
@@ -538,46 +590,33 @@ function renderTopics() {
           "topic";
 
 
-        const title =
-          topic.title ||
-          "Без заглавие";
-
-
-        const description =
-          topic.description ||
-          "Няма описание.";
-
-
-        const source =
-          topic.source ||
-          "Неизвестен източник";
-
-
-        const date =
-          formatDate(
-            topic.date
-          );
-
-
         article.innerHTML = `
 
           <h3>
-            ${escapeHtml(title)}
+            ${escapeHtml(
+              topic.title || "Без заглавие"
+            )}
           </h3>
 
           <p>
-            ${escapeHtml(description)}
+            ${escapeHtml(
+              topic.description || "Няма описание."
+            )}
           </p>
 
           <div class="topic-meta">
 
             Източник:
-            ${escapeHtml(source)}
+            ${escapeHtml(
+              topic.source || "Неизвестен"
+            )}
 
             <br>
 
             Дата:
-            ${escapeHtml(date)}
+            ${escapeHtml(
+              formatDate(topic.date)
+            )}
 
           </div>
 
@@ -639,31 +678,6 @@ function selectTopic(index) {
     "generate-post-btn"
   ).disabled = false;
 
-
-  document.getElementById(
-    "ai-post-area"
-  ).classList.add(
-    "hidden"
-  );
-
-
-  document.getElementById(
-    "generate-image-btn"
-  ).disabled = true;
-
-
-  window.scrollTo({
-
-    top:
-      document.getElementById(
-        "selected-topic"
-      ).offsetTop - 30,
-
-    behavior:
-      "smooth"
-
-  });
-
 }
 
 
@@ -697,7 +711,7 @@ document
 и real estate copywriter, специализиран в Barcelona и Spain.
 
 Създай готова публикация за Facebook и Instagram
-въз основа на следната АКТУАЛНА тема:
+въз основа на следната актуална тема.
 
 ТЕМА:
 ${selectedTopic.title}
@@ -714,46 +728,57 @@ ${selectedTopic.date}
 ВАЖНИ ПРАВИЛА:
 
 1. Не измисляй факти.
-2. Използвай само информацията, която е налична
-   в темата, или ясно маркирай информацията като общ контекст.
-3. Пиши естествено и професионално.
-4. Публикацията трябва да е подходяща за Facebook и Instagram.
-5. Фокусът е Barcelona / Spain real estate.
-6. Напиши интересно заглавие.
-7. Напиши основен текст с добра структура.
-8. Завърши с ясен CTA.
-9. Създай ТОЧНО 5 hashtags.
-10. Не създавай повече от 5 hashtags.
+2. Не измисляй статистики.
+3. Ако информацията не е достатъчна,
+   не добавяй конкретни непроверени факти.
+4. Пиши на български.
+5. Публикацията е за Facebook и Instagram.
+6. Аудиторията се интересува от недвижими имоти
+   в Barcelona и Spain.
+7. Напиши интересно заглавие.
+8. Напиши професионален основен текст.
+9. Напиши ясен CTA.
+10. Създай ТОЧНО 5 hashtags.
+11. Не създавай 4 или 6 hashtags.
 
-ВЪРНИ РЕЗУЛТАТА В ТОЗИ ФОРМАТ:
+ВЪРНИ ОТГОВОРА ТОЧНО В ТОЗИ ФОРМАТ:
 
 TITLE:
-[заглавие]
+тук напиши заглавието
 
 POST:
-[основният текст]
+тук напиши целия основен текст
 
 CTA:
-[call to action]
+тук напиши CTA
 
 HASHTAGS:
-[точно 5 hashtags]
+тук напиши точно 5 hashtags
 
 IMAGE PROMPT:
-[подробен prompt на английски за професионално
-вертикално изображение 4:5 за Facebook/Instagram]
+тук напиши подробен prompt на английски за изображение
 
-IMAGE PROMPT RULES:
+IMAGE PROMPT ИЗИСКВАНИЯ:
 
-- Barcelona / Spain real estate context
+- Barcelona, Spain
+- real estate context
 - professional
 - realistic
 - premium
 - modern Mediterranean feeling
+- natural light
+- editorial photography
 - vertical 4:5
-- no unnecessary text inside image
-- suitable for social media
-- visually connected to the topic
+- suitable for Facebook and Instagram
+- no logos
+- no watermarks
+- no unnecessary text inside the image
+
+ВАЖНО:
+
+Не добавяй обяснения преди TITLE.
+Не добавяй обяснения след IMAGE PROMPT.
+Върни само резултата в посочения формат.
 
       `.trim();
 
@@ -779,48 +804,20 @@ IMAGE PROMPT RULES:
           aiPrompt
         );
 
-
-        document.getElementById(
-          "ai-status"
-        ).innerHTML = `
-
-          <div class="success">
-
-            AI prompt-ът е копиран автоматично.
-
-          </div>
-
-        `;
-
       } catch (error) {
 
-        document.getElementById(
-          "ai-status"
-        ).innerHTML = `
-
-          <div class="error">
-
-            Не успях автоматично да копирам prompt-а.
-            Използвай бутона „Копирай AI prompt“.
-
-          </div>
-
-        `;
+        console.log(
+          "Clipboard error"
+        );
 
       }
-
-
-      document.getElementById(
-        "copy-prompt-btn"
-      ).focus();
-
 
     }
   );
 
 
 /* =========================================================
-   COPY AI PROMPT
+   COPY PROMPT
    ========================================================= */
 
 document
@@ -841,7 +838,6 @@ document
         alert(
           "AI prompt-ът е копиран."
         );
-
 
       } catch (error) {
 
@@ -877,7 +873,278 @@ document
 
 
 /* =========================================================
-   IMAGE GENERATION
+   PROCESS AI RESPONSE
+   ========================================================= */
+
+document
+  .getElementById(
+    "process-response-btn"
+  )
+  .addEventListener(
+    "click",
+    function () {
+
+
+      const response =
+        document.getElementById(
+          "ai-response"
+        ).value.trim();
+
+
+      if (!response) {
+
+        alert(
+          "Първо постави отговора от ChatGPT."
+        );
+
+        return;
+
+      }
+
+
+      const title =
+        extractSection(
+          response,
+          "TITLE:",
+          "POST:"
+        );
+
+
+      const post =
+        extractSection(
+          response,
+          "POST:",
+          "CTA:"
+        );
+
+
+      const cta =
+        extractSection(
+          response,
+          "CTA:",
+          "HASHTAGS:"
+        );
+
+
+      const hashtags =
+        extractSection(
+          response,
+          "HASHTAGS:",
+          "IMAGE PROMPT:"
+        );
+
+
+      const extractedImagePrompt =
+        extractSection(
+          response,
+          "IMAGE PROMPT:",
+          null
+        );
+
+
+      document.getElementById(
+        "post-title"
+      ).textContent =
+        title || "Не беше намерено заглавие.";
+
+
+      document.getElementById(
+        "post-text"
+      ).textContent =
+        post || "Не беше намерен текст.";
+
+
+      document.getElementById(
+        "post-cta"
+      ).textContent =
+        cta || "Не беше намерен CTA.";
+
+
+      document.getElementById(
+        "post-hashtags"
+      ).textContent =
+        hashtags || "Не бяха намерени hashtags.";
+
+
+      imagePrompt =
+        extractedImagePrompt.trim();
+
+
+      document.getElementById(
+        "image-prompt"
+      ).textContent =
+        imagePrompt ||
+        "Не беше намерен image prompt.";
+
+
+      document.getElementById(
+        "copy-btn"
+      ).disabled =
+        false;
+
+
+      document.getElementById(
+        "generate-image-btn"
+      ).disabled =
+        !imagePrompt;
+
+
+      document.getElementById(
+        "response-status"
+      ).innerHTML = `
+
+        <div class="success">
+
+          AI отговорът е обработен успешно.
+
+        </div>
+
+      `;
+
+    }
+  );
+
+
+/* =========================================================
+   EXTRACT SECTION
+   ========================================================= */
+
+function extractSection(
+  text,
+  startLabel,
+  endLabel
+) {
+
+  const start =
+    text.indexOf(
+      startLabel
+    );
+
+
+  if (start === -1) {
+
+    return "";
+
+  }
+
+
+  const contentStart =
+    start +
+    startLabel.length;
+
+
+  let end;
+
+
+  if (endLabel) {
+
+    end =
+      text.indexOf(
+        endLabel,
+        contentStart
+      );
+
+  } else {
+
+    end =
+      text.length;
+
+  }
+
+
+  if (end === -1) {
+
+    end =
+      text.length;
+
+  }
+
+
+  return text
+    .substring(
+      contentStart,
+      end
+    )
+    .trim();
+
+}
+
+
+/* =========================================================
+   COPY FINAL TEXT
+   ========================================================= */
+
+document
+  .getElementById(
+    "copy-btn"
+  )
+  .addEventListener(
+    "click",
+    async function () {
+
+
+      const title =
+        document.getElementById(
+          "post-title"
+        ).textContent;
+
+
+      const post =
+        document.getElementById(
+          "post-text"
+        ).textContent;
+
+
+      const cta =
+        document.getElementById(
+          "post-cta"
+        ).textContent;
+
+
+      const hashtags =
+        document.getElementById(
+          "post-hashtags"
+        ).textContent;
+
+
+      const finalText = `
+
+${title}
+
+${post}
+
+${cta}
+
+${hashtags}
+
+      `.trim();
+
+
+      try {
+
+        await navigator.clipboard.writeText(
+          finalText
+        );
+
+
+        alert(
+          "Готовата публикация е копирана."
+        );
+
+      } catch (error) {
+
+        alert(
+          "Не успях да копирам текста."
+        );
+
+      }
+
+    }
+  );
+
+
+/* =========================================================
+   IMAGE
    ========================================================= */
 
 document
@@ -889,57 +1156,15 @@ document
     async function () {
 
 
-      if (!selectedTopic) {
+      if (!imagePrompt) {
 
         alert(
-          "Първо избери тема."
+          "Няма image prompt."
         );
 
         return;
 
       }
-
-
-      imagePrompt = `
-
-Create a professional vertical 4:5 social media image
-for a Facebook and Instagram real estate post.
-
-Topic:
-${selectedTopic.title}
-
-Context:
-${selectedTopic.description}
-
-Location:
-Barcelona, Spain
-
-Style:
-realistic professional photography,
-premium real estate editorial style,
-modern Mediterranean atmosphere,
-natural light,
-clean composition,
-high-end property marketing,
-visually engaging,
-authentic Barcelona feeling.
-
-Format:
-vertical 4:5.
-
-Do not include unnecessary text,
-logos, watermarks or fake statistics.
-
-The image should visually communicate
-the main idea of the topic.
-
-      `.trim();
-
-
-      document.getElementById(
-        "image-prompt"
-      ).textContent =
-        imagePrompt;
 
 
       try {
@@ -965,98 +1190,17 @@ the main idea of the topic.
 
             <br><br>
 
-            Отвори ChatGPT,
-            постави prompt-а
-            и генерирай изображението.
+            Постави го в ChatGPT,
+            за да генерираш изображението.
 
           </div>
 
         `;
 
-
-      } catch (error) {
-
-        document.getElementById(
-          "image-status"
-        ).innerHTML = `
-
-          <div class="error">
-
-            Не успях автоматично да копирам prompt-а.
-
-            <br><br>
-
-            Копирай го ръчно от полето
-            Image Prompt.
-
-          </div>
-
-        `;
-
-      }
-
-    }
-  );
-
-
-/* =========================================================
-   COPY FINAL TEXT
-   ========================================================= */
-
-document
-  .getElementById(
-    "copy-btn"
-  )
-  .addEventListener(
-    "click",
-    async function () {
-
-
-      const text =
-        document.getElementById(
-          "post-text"
-        ).textContent;
-
-
-      const cta =
-        document.getElementById(
-          "post-cta"
-        ).textContent;
-
-
-      const hashtags =
-        document.getElementById(
-          "post-hashtags"
-        ).textContent;
-
-
-      const finalText = `
-
-${text}
-
-${cta}
-
-${hashtags}
-
-      `.trim();
-
-
-      try {
-
-        await navigator.clipboard.writeText(
-          finalText
-        );
-
-
-        alert(
-          "Текстът е копиран."
-        );
-
-
       } catch (error) {
 
         alert(
-          "Не успях да копирам текста."
+          "Не успях да копирам image prompt-а."
         );
 
       }
@@ -1077,96 +1221,7 @@ document
     "click",
     function () {
 
-
-      selectedTopic =
-        null;
-
-
-      aiPrompt =
-        "";
-
-
-      imagePrompt =
-        "";
-
-
-      document.getElementById(
-        "selected-topic"
-      ).textContent =
-        "Няма избрана тема.";
-
-
-      document.getElementById(
-        "selected-topic"
-      ).className =
-        "";
-
-
-      document.getElementById(
-        "generate-post-btn"
-      ).disabled =
-        true;
-
-
-      document.getElementById(
-        "generate-image-btn"
-      ).disabled =
-        true;
-
-
-      document.getElementById(
-        "copy-btn"
-      ).disabled =
-        true;
-
-
-      document
-        .getElementById(
-          "ai-post-area"
-        )
-        .classList.add(
-          "hidden"
-        );
-
-
-      document.getElementById(
-        "post-text"
-      ).textContent =
-        "Все още няма генерирана публикация.";
-
-
-      document.getElementById(
-        "post-cta"
-      ).textContent =
-        "Все още няма CTA.";
-
-
-      document.getElementById(
-        "post-hashtags"
-      ).textContent =
-        "Все още няма hashtags.";
-
-
-      document.getElementById(
-        "image-prompt"
-      ).textContent =
-        "Все още няма image prompt.";
-
-
-      document.getElementById(
-        "image-status"
-      ).innerHTML =
-        "";
-
-
-      window.scrollTo({
-
-        top: 0,
-
-        behavior:
-          "smooth"
-
-      });
+      location.reload();
 
     }
   );
@@ -1217,7 +1272,7 @@ function formatDate(
 
 
 /* =========================================================
-   HTML SECURITY
+   ESCAPE HTML
    ========================================================= */
 
 function escapeHtml(
