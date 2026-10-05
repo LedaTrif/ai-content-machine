@@ -1,9 +1,184 @@
+```html
 <!DOCTYPE html>
 <html lang="bg">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>AI Content Machine</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f5f7fa;
+      color: #1f2937;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 10px;
+      font-size: 36px;
+    }
+
+    header p {
+      margin: 0;
+      color: #d1d5db;
+    }
+
+    main {
+      width: min(100% - 32px, 1000px);
+      margin: 30px auto;
+    }
+
+    section {
+      background: white;
+      border-radius: 14px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 24px;
+    }
+
+    h3 {
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      border: none;
+      border-radius: 8px;
+      padding: 12px 18px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      background: #111827;
+      color: white;
+      transition: opacity 0.2s ease;
+    }
+
+    button:hover:not(:disabled) {
+      opacity: 0.8;
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .topic {
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 18px;
+      margin-bottom: 12px;
+    }
+
+    .topic h3 {
+      margin-top: 0;
+      font-size: 18px;
+    }
+
+    .topic p {
+      color: #6b7280;
+      line-height: 1.5;
+    }
+
+    .topic small {
+      display: block;
+      color: #9ca3af;
+      margin-bottom: 12px;
+    }
+
+    .topic button {
+      background: #2563eb;
+    }
+
+    #selected-topic {
+      padding: 15px;
+      background: #f3f4f6;
+      border-radius: 8px;
+    }
+
+    #post-result > div {
+      background: #f9fafb;
+      border-radius: 8px;
+      padding: 15px;
+      line-height: 1.6;
+    }
+
+    #image-result,
+    #ready-image {
+      margin-top: 20px;
+    }
+
+    #image-result img,
+    #ready-image img {
+      display: block;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      border-radius: 10px;
+    }
+
+    #ready-text {
+      background: #f9fafb;
+      padding: 20px;
+      border-radius: 10px;
+      line-height: 1.7;
+      margin-bottom: 15px;
+    }
+
+    #copy-text {
+      background: #2563eb;
+      margin-right: 8px;
+    }
+
+    #new-post {
+      background: #6b7280;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 30px 15px;
+      }
+
+      header h1 {
+        font-size: 28px;
+      }
+
+      main {
+        width: min(100% - 20px, 1000px);
+        margin: 15px auto;
+      }
+
+      section {
+        padding: 18px;
+      }
+
+      button {
+        width: 100%;
+        margin-top: 8px;
+      }
+
+      #copy-text {
+        margin-right: 0;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -15,18 +190,27 @@
 
   <main>
 
-    <!-- ТЕМИ -->
+    <!-- ========================= -->
+    <!-- 1. ТЕМИ -->
+    <!-- ========================= -->
+
     <section id="topics">
+
       <h2>Теми</h2>
 
       <div id="topic-list">
-        <p>Темите ще се появят тук.</p>
+        <p>Зареждане на темите...</p>
       </div>
+
     </section>
 
 
-    <!-- СЪЗДАЙ ПОСТ -->
+    <!-- ========================= -->
+    <!-- 2. СЪЗДАЙ ПОСТ -->
+    <!-- ========================= -->
+
     <section id="create-post">
+
       <h2>Създай пост</h2>
 
       <p id="selected-topic">
@@ -55,11 +239,16 @@
         <div id="image-prompt"></div>
 
       </div>
+
     </section>
 
 
-    <!-- ИЗОБРАЖЕНИЕ -->
+    <!-- ========================= -->
+    <!-- 3. ИЗОБРАЖЕНИЕ -->
+    <!-- ========================= -->
+
     <section id="image-section">
+
       <h2>Изображение</h2>
 
       <button id="generate-image" disabled>
@@ -67,11 +256,16 @@
       </button>
 
       <div id="image-result"></div>
+
     </section>
 
 
-    <!-- ГОТОВО -->
+    <!-- ========================= -->
+    <!-- 4. ГОТОВО -->
+    <!-- ========================= -->
+
     <section id="ready">
+
       <h2>Готово</h2>
 
       <div id="ready-image"></div>
@@ -85,9 +279,287 @@
       <button id="new-post">
         Започни нов пост
       </button>
+
     </section>
 
   </main>
 
+
+  <!-- ========================= -->
+  <!-- JAVASCRIPT -->
+  <!-- ========================= -->
+
+  <script>
+
+    /*
+      ТЕСТОВИ ТЕМИ
+
+      ВАЖНО:
+      Тези теми са само за тестване на интерфейса.
+      Не ги представяме като актуални новини.
+
+      По-късно ще ги заменим с реални RSS източници.
+    */
+
+    const topics = [
+
+      {
+        title: "Цените на имотите в Барселона",
+        description: "Как се развива пазарът на жилища в Барселона и какво е важно за купувачите.",
+        source: "Тестова тема",
+        date: "2026-10-05"
+      },
+
+      {
+        title: "Покупка на имот в Барселона",
+        description: "Основни неща, които трябва да знае човек преди да купи имот в Барселона.",
+        source: "Тестова тема",
+        date: "2026-10-05"
+      },
+
+      {
+        title: "Инвестиции в недвижими имоти",
+        description: "Какво трябва да се има предвид при инвестиция в имот в Барселона.",
+        source: "Тестова тема",
+        date: "2026-10-05"
+      },
+
+      {
+        title: "Най-популярните квартали на Барселона",
+        description: "Разлики между кварталите и как да изберем подходящ район.",
+        source: "Тестова тема",
+        date: "2026-10-05"
+      },
+
+      {
+        title: "Данъци при покупка на имот",
+        description: "Основни данъчни разходи, които могат да възникнат при покупка на имот в Испания.",
+        source: "Тестова тема",
+        date: "2026-10-05"
+      },
+
+      {
+        title: "Документи при покупка на имот",
+        description: "Кои документи е важно да бъдат проверени преди сделка.",
+        source: "Тестова тема",
+        date: "2026-10-05"
+      },
+
+      {
+        title: "Ново строителство в Барселона",
+        description: "Какво да знаем, когато разглеждаме ново строителство.",
+        source: "Тестова тема",
+        date: "2026-10-05"
+      },
+
+      {
+        title: "Ипотека в Испания",
+        description: "Основни въпроси, които купувачите трябва да разгледат при финансиране.",
+        source: "Тестова тема",
+        date: "2026-10-05"
+      },
+
+      {
+        title: "Животът в Барселона",
+        description: "Как районът, инфраструктурата и начинът на живот влияят върху избора на имот.",
+        source: "Тестова тема",
+        date: "2026-10-05"
+      },
+
+      {
+        title: "Как да изберем имот в Барселона",
+        description: "Практичен подход за сравняване на имоти и вземане на решение.",
+        source: "Тестова тема",
+        date: "2026-10-05"
+      }
+
+    ];
+
+
+    let selectedTopic = null;
+
+
+    const topicList =
+      document.getElementById("topic-list");
+
+    const selectedTopicElement =
+      document.getElementById("selected-topic");
+
+    const generatePostButton =
+      document.getElementById("generate-post");
+
+    const generateImageButton =
+      document.getElementById("generate-image");
+
+
+    /*
+      ПОКАЗВАНЕ НА ТЕМИТЕ
+    */
+
+    function displayTopics() {
+
+      topicList.innerHTML = "";
+
+      topics.forEach((topic, index) => {
+
+        const topicElement =
+          document.createElement("div");
+
+        topicElement.className = "topic";
+
+        topicElement.innerHTML = `
+
+          <h3>${topic.title}</h3>
+
+          <p>
+            ${topic.description}
+          </p>
+
+          <small>
+            Източник: ${topic.source}
+            |
+            Дата: ${topic.date}
+          </small>
+
+          <button onclick="selectTopic(${index})">
+            Избери
+          </button>
+
+        `;
+
+        topicList.appendChild(topicElement);
+
+      });
+
+    }
+
+
+    /*
+      ИЗБОР НА ТЕМА
+    */
+
+    function selectTopic(index) {
+
+      selectedTopic = topics[index];
+
+      selectedTopicElement.textContent =
+        "Избрана тема: " + selectedTopic.title;
+
+      generatePostButton.disabled = false;
+
+      generateImageButton.disabled = true;
+
+      document.getElementById("post-result").hidden = true;
+
+      document.getElementById("image-result").innerHTML = "";
+
+      document.getElementById("ready-image").innerHTML = "";
+
+      document.getElementById("ready-text").innerHTML = "";
+
+    }
+
+
+    /*
+      ТЕСТ НА БУТОНА ЗА ПОСТ
+    */
+
+    generatePostButton.addEventListener(
+      "click",
+      function () {
+
+        if (!selectedTopic) {
+          return;
+        }
+
+        alert(
+          "Темата е избрана успешно. В следващата стъпка ще свържем AI."
+        );
+
+      }
+    );
+
+
+    /*
+      ТЕСТ НА БУТОНА ЗА ИЗОБРАЖЕНИЕ
+    */
+
+    generateImageButton.addEventListener(
+      "click",
+      function () {
+
+        alert(
+          "Генерирането на изображение ще бъде добавено по-късно."
+        );
+
+      }
+    );
+
+
+    /*
+      КОПИРАНЕ НА ТЕКСТА
+    */
+
+    document
+      .getElementById("copy-text")
+      .addEventListener("click", function () {
+
+        const text =
+          document.getElementById("ready-text").innerText;
+
+        if (!text) {
+          alert("Все още няма готов текст.");
+          return;
+        }
+
+        navigator.clipboard.writeText(text);
+
+        alert("Текстът е копиран.");
+
+      });
+
+
+    /*
+      НОВ ПОСТ
+    */
+
+    document
+      .getElementById("new-post")
+      .addEventListener("click", function () {
+
+        selectedTopic = null;
+
+        selectedTopicElement.textContent =
+          "Първо избери тема.";
+
+        generatePostButton.disabled = true;
+
+        generateImageButton.disabled = true;
+
+        document.getElementById("post-result").hidden = true;
+
+        document.getElementById("image-result").innerHTML = "";
+
+        document.getElementById("ready-image").innerHTML = "";
+
+        document.getElementById("ready-text").innerHTML = "";
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+
+      });
+
+
+    /*
+      СТАРТИРАНЕ
+    */
+
+    displayTopics();
+
+  </script>
+
 </body>
 </html>
+```
