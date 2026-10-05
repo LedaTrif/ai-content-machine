@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Content Machine</title>
+</head>
+
+<body>
+
+  <header>
+    <h1>AI Content Machine</h1>
+    <p>Barcelona Real Estate Content</p>
+  </header>
+
+  <main>
+
+    <!-- ТЕМИ -->
+    <section id="topics">
+      <h2>Теми</h2>
+
+      <div id="topic-list">
+        <p>Темите ще се появят тук.</p>
+      </div>
+    </section>
+
+
+    <!-- СЪЗДАЙ ПОСТ -->
+    <section id="create-post">
+      <h2>Създай пост</h2>
+
+      <p id="selected-topic">
+        Първо избери тема.
+      </p>
+
+      <button id="generate-post" disabled>
+        Генерирай публикация
+      </button>
+
+      <div id="post-result" hidden>
+
+        <h3>Заглавие</h3>
+        <div id="post-title"></div>
+
+        <h3>Основен текст</h3>
+        <div id="post-text"></div>
+
+        <h3>CTA</h3>
+        <div id="post-cta"></div>
+
+        <h3>Hashtags</h3>
+        <div id="post-hashtags"></div>
+
+        <h3>Image prompt</h3>
+        <div id="image-prompt"></div>
+
+      </div>
+    </section>
+
+
+    <!-- ИЗОБРАЖЕНИЕ -->
+    <section id="image-section">
+      <h2>Изображение</h2>
+
+      <button id="generate-image" disabled>
+        Генерирай изображение
+      </button>
+
+      <div id="image-result"></div>
+    </section>
+
+
+    <!-- ГОТОВО -->
+    <section id="ready">
+      <h2>Готово</h2>
+
+      <div id="ready-image"></div>
+
+      <div id="ready-text"></div>
+
+      <button id="copy-text">
+        Копирай текста
+      </button>
+
+      <button id="new-post">
+        Започни нов пост
+      </button>
+    </section>
+
+  </main>
+
+</body>
+</html>
