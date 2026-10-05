@@ -1,1 +1,88 @@
 
+name: Update topics
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */6 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  update-topics:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Google News RSS
+        run: |
+          curl -L "https://news.google.com/rss/search?q=Barcelona+real+estate+OR+Barcelona+housing+OR+Barcelona+property&hl=en-US&gl=ES&ceid=ES:en" \
+          -o topics.xml
+
+      - name: Create topics JSON
+        run: |
+          python - <<'PY'
+          import xml.etree.ElementTree as ET
+          import json
+          import html
+          import re
+          from email.utils import parsedate_to_datetime
+
+          tree = ET.parse("topics.xml")
+          root = tree.getroot()
+
+          topics = []
+
+          for item in root.findall(".//item")[:10]:
+              title = item.findtext("title", "").strip()
+              link = item.findtext("link", "").strip()
+              description = item.findtext("description", "").strip()
+              pub_date = item.findtext("pubDate", "").strip()
+
+              source_element = item.find("source")
+              source = ""
+
+              if source_element is not None:
+                  source = source_element.text or ""
+
+              description = html.unescape(
+                  re.sub("<[^>]+>", "", description)
+              ).strip()
+
+              date = pub_date
+
+              try:
+                  date = parsedate_to_datetime(pub_date).isoformat()
+              except Exception:
+                  pass
+
+              topics.append({
+                  "title": title,
+                  "description": description,
+                  "source": source,
+                  "date": date,
+                  "url": link
+              })
+
+          with open("topics.json", "w", encoding="utf-8") as file:
+              json.dump(
+                  topics,
+                  file,
+                  ensure_ascii=False,
+                  indent=2
+              )
+          PY
+
+      - name: Save updated topics
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add topics.json
+
+          git diff --cached --quiet || git commit -m "Update topics"
+
+          git push
