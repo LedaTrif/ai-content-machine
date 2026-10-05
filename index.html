@@ -91,6 +91,8 @@
       font-weight: bold;
       background: #111;
       color: white;
+      margin-right: 8px;
+      margin-bottom: 8px;
     }
 
     button:hover {
@@ -120,16 +122,19 @@
       line-height: 1.6;
     }
 
-    .loading {
-      text-align: center;
-      padding: 25px;
-    }
-
     .error {
       background: #fff0f0;
       color: #a00000;
       padding: 15px;
       border-radius: 8px;
+    }
+
+    .success {
+      background: #eef9f0;
+      color: #176b2c;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
     }
   </style>
 </head>
@@ -145,6 +150,7 @@
 
     <!-- ТЕМИ -->
     <section id="topics-section">
+
       <h2>1. ТЕМИ</h2>
 
       <div id="topics-status" class="status">
@@ -152,11 +158,13 @@
       </div>
 
       <div id="topics-container"></div>
+
     </section>
 
 
     <!-- СЪЗДАЙ ПОСТ -->
     <section id="create-section">
+
       <h2>2. СЪЗДАЙ ПОСТ</h2>
 
       <div id="selected-topic">
@@ -172,41 +180,56 @@
       <div id="post-result" class="hidden">
 
         <h3>Заглавие</h3>
+
         <div id="post-title" class="result-box"></div>
 
+
         <h3>Основен текст</h3>
+
         <div id="post-text" class="result-box"></div>
 
+
         <h3>CTA</h3>
+
         <div id="post-cta" class="result-box"></div>
 
+
         <h3>5 хаштага</h3>
+
         <div id="post-hashtags" class="result-box"></div>
 
+
         <h3>Image Prompt</h3>
+
         <div id="image-prompt" class="result-box"></div>
 
       </div>
+
     </section>
 
 
     <!-- ИЗОБРАЖЕНИЕ -->
     <section id="image-section">
+
       <h2>3. ИЗОБРАЖЕНИЕ</h2>
 
       <p>
-        В следващата стъпка ще свържем image prompt с ChatGPT,
-        за да създаваме изображение.
+        Използвай готовия image prompt в ChatGPT,
+        за да създадеш изображението.
       </p>
 
       <button id="generate-image-btn" disabled>
         Генерирай изображение
       </button>
+
+      <div id="image-status"></div>
+
     </section>
 
 
     <!-- ГОТОВО -->
     <section id="ready-section">
+
       <h2>4. ГОТОВО</h2>
 
       <div id="ready-content">
@@ -222,6 +245,7 @@
       <button id="new-post-btn">
         Започни нов пост
       </button>
+
     </section>
 
   </main>
@@ -239,23 +263,36 @@
 
     async function loadTopics() {
 
-      const container = document.getElementById("topics-container");
-      const status = document.getElementById("topics-status");
+      const container =
+        document.getElementById("topics-container");
+
+      const status =
+        document.getElementById("topics-status");
 
       try {
 
-        const response = await fetch("topics.json", {
-          cache: "no-store"
-        });
+        const response = await fetch(
+          "topics.json",
+          {
+            cache: "no-store"
+          }
+        );
 
         if (!response.ok) {
-          throw new Error("topics.json не беше намерен.");
+          throw new Error(
+            "topics.json не беше намерен."
+          );
         }
 
         topics = await response.json();
 
-        if (!Array.isArray(topics) || topics.length === 0) {
-          throw new Error("topics.json не съдържа теми.");
+        if (
+          !Array.isArray(topics) ||
+          topics.length === 0
+        ) {
+          throw new Error(
+            "topics.json не съдържа теми."
+          );
         }
 
         status.textContent =
@@ -284,49 +321,69 @@
     function renderTopics() {
 
       const container =
-        document.getElementById("topics-container");
+        document.getElementById(
+          "topics-container"
+        );
 
       container.innerHTML = "";
 
-      topics.slice(0, 10).forEach((topic, index) => {
+      topics
+        .slice(0, 10)
+        .forEach((topic, index) => {
 
-        const article = document.createElement("div");
+          const article =
+            document.createElement("div");
 
-        article.className = "topic";
+          article.className = "topic";
 
-        const title =
-          topic.title || "Без заглавие";
+          const title =
+            topic.title ||
+            "Без заглавие";
 
-        const description =
-          topic.description || "Няма описание.";
+          const description =
+            topic.description ||
+            "Няма описание.";
 
-        const source =
-          topic.source || "Неизвестен източник";
+          const source =
+            topic.source ||
+            "Неизвестен източник";
 
-        const date =
-          formatDate(topic.date);
+          const date =
+            formatDate(topic.date);
 
-        article.innerHTML = `
-          <h3>${escapeHtml(title)}</h3>
+          article.innerHTML = `
 
-          <p>
-            ${escapeHtml(description)}
-          </p>
+            <h3>
+              ${escapeHtml(title)}
+            </h3>
 
-          <div class="topic-meta">
-            Източник: ${escapeHtml(source)}
-            <br>
-            Дата: ${escapeHtml(date)}
-          </div>
+            <p>
+              ${escapeHtml(description)}
+            </p>
 
-          <button onclick="selectTopic(${index})">
-            Избери
-          </button>
-        `;
+            <div class="topic-meta">
 
-        container.appendChild(article);
+              Източник:
+              ${escapeHtml(source)}
 
-      });
+              <br>
+
+              Дата:
+              ${escapeHtml(date)}
+
+            </div>
+
+            <button
+              onclick="selectTopic(${index})"
+            >
+              Избери
+            </button>
+
+          `;
+
+          container.appendChild(article);
+
+        });
 
     }
 
@@ -337,19 +394,36 @@
 
     function selectTopic(index) {
 
-      selectedTopic = topics[index];
+      selectedTopic =
+        topics[index];
 
       const selectedBox =
-        document.getElementById("selected-topic");
+        document.getElementById(
+          "selected-topic"
+        );
 
       selectedBox.innerHTML = `
-        <strong>Избрана тема:</strong><br><br>
-        ${escapeHtml(selectedTopic.title)}
+
+        <strong>
+          Избрана тема:
+        </strong>
+
+        <br><br>
+
+        ${escapeHtml(
+          selectedTopic.title
+        )}
+
       `;
 
-      selectedBox.className = "selected";
-      selectedBox.style.padding = "15px";
-      selectedBox.style.borderRadius = "8px";
+      selectedBox.className =
+        "selected";
+
+      selectedBox.style.padding =
+        "15px";
+
+      selectedBox.style.borderRadius =
+        "8px";
 
       document.getElementById(
         "generate-post-btn"
@@ -359,79 +433,186 @@
         "post-result"
       ).classList.add("hidden");
 
+      document.getElementById(
+        "generate-image-btn"
+      ).disabled = true;
+
       window.scrollTo({
-        top: document.getElementById(
-          "create-section"
-        ).offsetTop - 20,
+
+        top:
+          document.getElementById(
+            "create-section"
+          ).offsetTop - 20,
+
         behavior: "smooth"
+
       });
 
     }
 
 
     /*
-      4. Засега само тестова функция.
-      AI ще свържем в следващата стъпка.
+      4. Генериране на публикация
     */
 
     document
-      .getElementById("generate-post-btn")
-      .addEventListener("click", function () {
+      .getElementById(
+        "generate-post-btn"
+      )
+      .addEventListener(
+        "click",
+        function () {
 
-        if (!selectedTopic) {
-          alert("Първо избери тема.");
-          return;
+          if (!selectedTopic) {
+
+            alert(
+              "Първо избери тема."
+            );
+
+            return;
+
+          }
+
+          document
+            .getElementById(
+              "post-result"
+            )
+            .classList.remove(
+              "hidden"
+            );
+
+
+          document.getElementById(
+            "post-title"
+          ).textContent =
+            selectedTopic.title;
+
+
+          document.getElementById(
+            "post-text"
+          ).textContent =
+            "Тук AI ще генерира основния текст на публикацията.";
+
+
+          document.getElementById(
+            "post-cta"
+          ).textContent =
+            "Тук AI ще генерира CTA.";
+
+
+          document.getElementById(
+            "post-hashtags"
+          ).textContent =
+            "#Barcelona #RealEstate #Property #Spain #Investment";
+
+
+          document.getElementById(
+            "image-prompt"
+          ).textContent =
+            "Create a professional vertical 4:5 social media image about: " +
+            selectedTopic.title +
+            ". Barcelona real estate context, modern Mediterranean style, realistic photography, clean composition, premium professional look, no text, suitable for Facebook and Instagram.";
+
+
+          document.getElementById(
+            "generate-image-btn"
+          ).disabled = false;
+
+
+          document.getElementById(
+            "copy-btn"
+          ).disabled = false;
+
         }
-
-        document
-          .getElementById("post-result")
-          .classList.remove("hidden");
-
-        document.getElementById(
-          "post-title"
-        ).textContent =
-          selectedTopic.title;
-
-        document.getElementById(
-          "post-text"
-        ).textContent =
-          "Тук AI ще генерира основния текст на публикацията.";
-
-        document.getElementById(
-          "post-cta"
-        ).textContent =
-          "Тук AI ще генерира CTA.";
-
-        document.getElementById(
-          "post-hashtags"
-        ).textContent =
-          "#Barcelona #RealEstate #Property #Spain #Investment";
-
-        document.getElementById(
-          "image-prompt"
-        ).textContent =
-          "Тук AI ще създаде prompt за изображението.";
-
-        document.getElementById(
-          "generate-image-btn"
-        ).disabled = false;
-
-      });
+      );
 
 
     /*
-      5. Бутон за изображение
+      5. Генериране на изображение
     */
 
     document
-      .getElementById("generate-image-btn")
-      .addEventListener("click", function () {
+      .getElementById(
+        "generate-image-btn"
+      )
+      .addEventListener(
+        "click",
+        async function () {
 
-        alert(
-          "В следващата стъпка ще свържем този prompt с ChatGPT за генериране на изображение."
-        );
+          const imagePrompt =
+            document
+              .getElementById(
+                "image-prompt"
+              )
+              .textContent
+              .trim();
 
-      });
+
+          if (!imagePrompt) {
+
+            alert(
+              "Първо трябва да има image prompt."
+            );
+
+            return;
+
+          }
+
+
+          try {
+
+            await navigator.clipboard
+              .writeText(
+                imagePrompt
+              );
+
+
+            window.open(
+              "https://chatgpt.com/",
+              "_blank"
+            );
+
+
+            document.getElementById(
+              "image-status"
+            ).innerHTML = `
+
+              <div class="success">
+
+                Image prompt-ът е копиран.
+
+                <br><br>
+
+                Отвори ChatGPT в новия таб,
+                постави prompt-а и генерирай изображението.
+
+              </div>
+
+            `;
+
+          } catch (error) {
+
+            document.getElementById(
+              "image-status"
+            ).innerHTML = `
+
+              <div class="error">
+
+                Не успях автоматично да копирам prompt-а.
+
+                <br><br>
+
+                Копирай го ръчно от полето
+                "Image Prompt".
+
+              </div>
+
+            `;
+
+          }
+
+        }
+      );
 
 
     /*
@@ -439,22 +620,39 @@
     */
 
     document
-      .getElementById("copy-btn")
-      .addEventListener("click", function () {
+      .getElementById(
+        "copy-btn"
+      )
+      .addEventListener(
+        "click",
+        function () {
 
-        const title =
-          document.getElementById("post-title").textContent;
+          const title =
+            document.getElementById(
+              "post-title"
+            ).textContent;
 
-        const text =
-          document.getElementById("post-text").textContent;
 
-        const cta =
-          document.getElementById("post-cta").textContent;
+          const text =
+            document.getElementById(
+              "post-text"
+            ).textContent;
 
-        const hashtags =
-          document.getElementById("post-hashtags").textContent;
 
-        const fullText =
+          const cta =
+            document.getElementById(
+              "post-cta"
+            ).textContent;
+
+
+          const hashtags =
+            document.getElementById(
+              "post-hashtags"
+            ).textContent;
+
+
+          const fullText =
+
 `${title}
 
 ${text}
@@ -463,15 +661,32 @@ ${cta}
 
 ${hashtags}`;
 
-        navigator.clipboard.writeText(fullText)
-          .then(() => {
-            alert("Текстът е копиран.");
-          })
-          .catch(() => {
-            alert("Не успях да копирам текста.");
-          });
 
-      });
+          navigator.clipboard
+            .writeText(fullText)
+
+            .then(
+              () => {
+
+                alert(
+                  "Текстът е копиран."
+                );
+
+              }
+            )
+
+            .catch(
+              () => {
+
+                alert(
+                  "Не успях да копирам текста."
+                );
+
+              }
+            );
+
+        }
+      );
 
 
     /*
@@ -479,59 +694,95 @@ ${hashtags}`;
     */
 
     document
-      .getElementById("new-post-btn")
-      .addEventListener("click", function () {
+      .getElementById(
+        "new-post-btn"
+      )
+      .addEventListener(
+        "click",
+        function () {
 
-        selectedTopic = null;
+          selectedTopic = null;
 
-        document.getElementById(
-          "selected-topic"
-        ).textContent =
-          "Няма избрана тема.";
 
-        document.getElementById(
-          "selected-topic"
-        ).className = "";
+          document.getElementById(
+            "selected-topic"
+          ).textContent =
+            "Няма избрана тема.";
 
-        document.getElementById(
-          "generate-post-btn"
-        ).disabled = true;
 
-        document.getElementById(
-          "generate-image-btn"
-        ).disabled = true;
+          document.getElementById(
+            "selected-topic"
+          ).className = "";
 
-        document.getElementById(
-          "copy-btn"
-        ).disabled = true;
 
-        document.getElementById(
-          "post-result"
-        ).classList.add("hidden");
+          document.getElementById(
+            "generate-post-btn"
+          ).disabled = true;
 
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth"
-        });
 
-      });
+          document.getElementById(
+            "generate-image-btn"
+          ).disabled = true;
+
+
+          document.getElementById(
+            "copy-btn"
+          ).disabled = true;
+
+
+          document.getElementById(
+            "post-result"
+          ).classList.add(
+            "hidden"
+          );
+
+
+          document.getElementById(
+            "image-status"
+          ).innerHTML = "";
+
+
+          window.scrollTo({
+
+            top: 0,
+
+            behavior: "smooth"
+
+          });
+
+        }
+      );
 
 
     /*
       8. Форматиране на дата
     */
 
-    function formatDate(dateString) {
+    function formatDate(
+      dateString
+    ) {
 
       if (!dateString) {
+
         return "Неизвестна дата";
+
       }
 
-      const date = new Date(dateString);
 
-      if (isNaN(date.getTime())) {
+      const date =
+        new Date(dateString);
+
+
+      if (
+        isNaN(
+          date.getTime()
+        )
+      ) {
+
         return dateString;
+
       }
+
 
       return date.toLocaleDateString(
         "bg-BG",
@@ -549,12 +800,17 @@ ${hashtags}`;
       9. Защита при показване на текст
     */
 
-    function escapeHtml(value) {
+    function escapeHtml(
+      value
+    ) {
 
       const div =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
-      div.textContent = value;
+      div.textContent =
+        value;
 
       return div.innerHTML;
 
